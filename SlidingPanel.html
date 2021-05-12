@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+    <title>Sliding panel</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="SlidingPanel.css" />
+</head>
+<body>
+    <div class="app">
+        <div class="left-slide-panel-container drop-container">
+        </div>
+        <div class="main">
+            <button class="show-slide-btn" id="slide-btn">Show panel</button>
+            <textarea class="test-ta" rows=50 cols=200>Some text...</textarea>
+        </div>
+        <div class="right-slide-panel-container drop-container">
+            <div class="slide-panel" id="my-slide-panel">
+                <div class="slide_panel__manage-panel">
+                    <div class="slide_panel__manage-panel-main">
+                        PageX: <span style="color: white" id="coordPageX"></span>; PageY: <span style="color: white" id="coordPageY"></span>  
+                    </div>
+                    <div class="slide_panel__manage-menu">
+                        <div class="slide_panel__manage-menu-element" id="slide-close-btn">
+                            <span class="material-icons slide_panel__manage-menu-icon">close</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-panel__content-panel">
+    
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        class Point
+        {
+            constructor(x, y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        window.onload = () => {
+
+            const visibleClass = "slide-panel_visible";
+
+            let slideBtn = document.getElementById("slide-btn");
+            let slidePanel = document.getElementById("my-slide-panel");
+            let slideCloseBtn = document.getElementById("slide-close-btn");
+            let slideManagePanel = document.querySelector(".slide_panel__manage-panel-main");
+
+            let rightSlidePanel = document.querySelector('.right-slide-panel-container');
+            let leftSlidePanel = document.querySelector('.left-slide-panel-container');
+
+            let coordPageY     = document.getElementById("coordPageY");
+            let coordPageX  = document.getElementById("coordPageX");
+            
+            function switchSlidePanel(event)
+            {
+                event.stopPropagation();
+  
+                if(slidePanel.classList.contains(visibleClass)) 
+                {
+                    slidePanel.classList.remove(visibleClass);
+                    slideBtn.textContent = "Show panel";
+
+                } else {
+
+                    slidePanel.classList.add(visibleClass);
+                    slideBtn.textContent = "Hide panel";
+                }
+            }
+
+            slideBtn.addEventListener("click", switchSlidePanel);
+            slideCloseBtn.addEventListener("click", switchSlidePanel);
+
+            var curMouseShiftPoint = new Point();
+            var isMoving = false;
+            var isMovable = false;
+
+
+            function getCoords(elem) 
+            {
+                let box = elem.getBoundingClientRect();
+
+                return {
+                    top:    box.top + window.pageYOffset,
+                    right:  box.right + window.pageXOffset,
+                    bottom: box.bottom + window.pageYOffset,
+                    left:   box.left + window.pageXOffset
+                };
+            }
+
+            function slidePanelMouseDown(e) 
+            {
+                e.preventDefault();
+
+                curMouseShiftPoint.x = e.clientX - slidePanel.getBoundingClientRect().left;
+                curMouseShiftPoint.y = e.clientY - slidePanel.getBoundingClientRect().top;
+
+                isMoving = true;
+            }
+
+            function slidePanelMouseMove(e) 
+            {
+                e.preventDefault();
+
+                if(isMoving == true)
+                {
+
+                    var panelCoord = getCoords(slidePanel);
+                
+                    let viewX = document.documentElement.scrollLeft;
+                    let viewWidth = document.documentElement.clientWidth + viewX;
+
+                    if(isMovable)
+                    {
+                        slidePanel.style.top  = e.pageY  - curMouseShiftPoint.y + "px";
+                        slidePanel.style.left = e.pageX  - curMouseShiftPoint.x  + "px";
+
+                        coordPageY.textContent = e.pageY;
+                        coordPageX.textContent = e.pageX;
+
+                        if(e.pageX <= viewX || e.pageX >= viewWidth)
+                        {
+                            isMovable = false;
+                            isMoving = false;
+
+                            if(e.pageX <= viewX && rightSlidePanel.contains(slidePanel))
+                            {
+                                
+                                rightSlidePanel.removeChild(slidePanel);
+                                leftSlidePanel.appendChild(slidePanel);
+
+                            } else if(e.pageX >= viewWidth 
+                                        && leftSlidePanel.contains(slidePanel)) {
+
+                                leftSlidePanel.removeChild(slidePanel);
+                                rightSlidePanel.appendChild(slidePanel);
+                            }
+
+                            slidePanel.style.position = "static";
+                            slidePanel.style.top  = 0;
+                            slidePanel.style.left = 0;
+
+                        }
+
+                    } else {
+                        
+                        if(e.pageX > viewX && e.pageX < panelCoord.left 
+                            || e.pageX < viewWidth && e.pageX > slidePanel.offsetWidth + panelCoord.left)
+                        {
+                            isMovable = true;
+                            slidePanel.style.top  = e.pageY  - curMouseShiftPoint.y + "px";
+                            slidePanel.style.left = e.pageX  - curMouseShiftPoint.x  + "px";
+                            slidePanel.style.position = "absolute";
+                        }     
+                    }
+                } 
+            }
+
+            function slidePanelMouseUp(e) 
+            {
+                if(isMoving == true)
+                {
+                    isMoving = false;
+                }
+            }
+
+            slideManagePanel.addEventListener("mousedown", slidePanelMouseDown);
+            document.addEventListener("mousemove", slidePanelMouseMove);
+            slideManagePanel.addEventListener("mouseup",   slidePanelMouseUp);
+        };
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+
+$slide-width: 450px
+$side-back-color: #3a474d
+$basic-material-icon-size: 18px
+$slide-panel-element-width: $basic-material-icon-size + 25px
+$slide-panel-initial-display: flex
+
+@mixin flexElement($direction: row, $justify: space-between, $align: flex-start, $flex: 0 1 auto)
+    display: flex
+    flex-direction: $direction
+    justify-content: $justify
+    align-items: $align
+    flex: $flex
+
+body
+    margin: 0
+
+.app
+    @include flexElement()
+
+.slide-panel
+    @include flexElement($direction: column, $flex: 0 0 auto)
+    position: static
+    top: 0
+    background-color: $side-back-color
+    width: $slide-width
+    box-sizing: border-box
+    z-index: 10001
+    /* right: -$slide-width - 100px */
+    /* transition: right 0.8s */
+    height: 100vh
+    left: 0
+    display: none
+
+.slide_panel__manage-panel
+    @include flexElement($direction: row, $justify: space-between, $align: center, $flex: 0 0 auto)
+    width: 100%
+    height: 40px
+
+.slide_panel__manage-panel-main
+    width: 100%
+    height: 100%
+
+.slide_panel__manage-panel-main:hover
+    cursor: move
+
+.slide_panel__manage-menu
+    @include flexElement($direction: row, $justify: space-between, $align: center)
+    height: 100%
+
+.slide-panel__content-panel
+    flex-grow: 999
+
+.slide-panel_visible
+    display: $slide-panel-initial-display
+
+.main
+    @include flexElement($direction: row, $justify: flex-start, $align: center, $flex: 0 1 auto)
+    width: 100%
+    height: 100vh
+    min-width: 0
+
+.test-ta
+    max-width: 100% 
+    display: block
+    box-sizing: border-box
+    max-height: 100%
+
+.material-icons
+    font-family: 'Material Icons'
+    font-weight: normal
+    font-style: normal
+    font-size: $basic-material-icon-size
+    display: inline-block
+    line-height: 1
+    text-transform: none
+    letter-spacing: normal
+    word-wrap: normal
+    white-space: nowrap
+    direction: ltr
+  
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility
+  
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale
+  
+    /* Support for IE. */
+    font-feature-settings: 'liga'
+
+.slide_panel__manage-menu-icon
+    color: #999999
+    transition: transform .1s
+
+.slide_panel__manage-menu-element
+    @include flexElement($direction: row, $justify: center, $align: center)
+    height: 100%
+    width: $slide-panel-element-width
+
+.slide_panel__manage-menu-element:hover, .slide_panel__manage-menu-element:focus
+    background-color: #e2201aa9
+    cursor: pointer
+
+    .slide_panel__manage-menu-icon
+        color: #ffffff
+        transform: scale(1.055, 1.055)
+
+
+
